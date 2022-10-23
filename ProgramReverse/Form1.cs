@@ -21,6 +21,22 @@ namespace ProgramReverse
 
     public partial class Form1 : Form
     {
+        //Для хренения максимальных и минимальных значений
+        public float maxX { get; set; }
+        public float maxY { get; set; }
+        public float minX { get; set; }
+        public float minY { get; set; }
+        public float shiftX { get; set; }
+        public float shiftY { get; set; }
+
+        /// <summary>
+        /// Отступ рисунка от краев
+        /// </summary>
+        public float Padding { get; set; } = 20;
+
+        public float Scale { get; set; }
+
+
         public List<lattice> lattices = new List<lattice>();
         public List<tempLattice> lat = new List<tempLattice>(); //Для хранения решеток которые еще не получили значения
 
@@ -62,6 +78,7 @@ namespace ProgramReverse
             coordinates.Clear();
             AllCode.Clear();
             lattices.Clear();
+            lat.Clear();
             numbers.Clear();
             ReverseCoordinate.Clear();
         }
@@ -90,7 +107,6 @@ namespace ProgramReverse
 
                 LatticeSorting(); // Сортировка решеток по возрастанию
 
-
                 SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
 
                 DrawProgram(coordinates); // Рисуем
@@ -117,10 +133,10 @@ namespace ProgramReverse
 
                     LatticeSorting(); // Сортировка решеток по возрастанию
 
-
                     SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
 
                     richTextBox1.Text = File.ReadAllText(file.FileName, Encoding.Default);
+                    richTextBox1.ScrollToCaret(); 
 
                     DrawProgram(coordinates); // Рисуем
                 }
@@ -143,6 +159,12 @@ namespace ProgramReverse
                 CheckVar(item);
                 AllCode.Add(item.Replace(" ", ""));
             }
+            for (int i = 0; i < lat.Count; i++)
+                for (int j = 0; j < lattices.Count; j++)
+                {
+                    if (lat[i].Value.Contains(lattices[j].getLattice()))
+                        lattices.Add(new lattice(lat[i].Number, MyMethods.Calculate(lat[i].Value.Replace(lattices[j].getLattice(), lattices[j].Value.ToString()))));
+                }
         }
         private void LatticesReplace() {
             for (int i = 0; i < AllCode.Count; i++)
@@ -156,6 +178,45 @@ namespace ProgramReverse
                 if ((item.IndexOf("G1") != -1 || item.IndexOf("G2") != -1 || item.IndexOf("G3") != -1) && item.IndexOf('Z') == -1) {
                     coordinates.Add(new Coordinate(item));
                 }
+            }
+            for (int i = 0; i < coordinates.Count; i++)
+            {
+                if (i == 0)
+                {
+                    minY = coordinates[i].Y;
+                    maxY = coordinates[i].Y;
+                    minX = coordinates[i].X;
+                    maxX = coordinates[i].X;
+                }
+                if (maxX < coordinates[i].X)
+                    maxX = coordinates[i].X;
+                if (minX > coordinates[i].X)
+                    minX = coordinates[i].X;
+                if (maxY < coordinates[i].Y)
+                    maxY = coordinates[i].Y;
+                if (minY > coordinates[i].Y)
+                    minY = coordinates[i].Y;
+            }
+            shiftX = 0 - minX;
+            shiftY = 0 - maxY;
+
+            if (maxX - minX > maxY - minY)
+            {
+                Scale = Math.Abs(pictureBox1.Width / (maxX - minX + Padding * 2));
+            }
+            else
+            {
+                Scale = Math.Abs(pictureBox1.Height / (maxY - minY + Padding * 2));
+            }
+            
+            
+
+            foreach (var item in coordinates)
+            {
+                item.scaleI = (item.I + shiftX + Padding) * Scale;
+                item.scaleX = (item.X + shiftX + Padding) * Scale;
+                item.scaleJ = (item.J + shiftY - Padding) * Scale;
+                item.scaleY = (item.Y + shiftY - Padding) * Scale;
             }
         }
         private void SetNextPrev(List<Coordinate> coordinates)
@@ -233,7 +294,7 @@ namespace ProgramReverse
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            label1.Text = e.Location.ToString();
+            label1.Text = new PointF(e.Location.X * Scale, (e.Location.Y * Scale)).ToString();
         }
 
         

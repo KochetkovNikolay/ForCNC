@@ -13,17 +13,17 @@ namespace ProgramReverse
     }
     public class Coordinate
     {
-        //Для хренения максимальных и минимальных значений
-        static public float maxX { get; set; } 
-        static public float maxY { get; set; }
-        static public float minX { get; set; }
-        static public float minY { get; set; }
 
+
+        public float Radius { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-        public float Radius { get; set; }
         public float I { get; set; }
         public float J { get; set; }
+        public float scaleX { get; set; }
+        public float scaleY { get; set; }
+        public float scaleI { get; set; }
+        public float scaleJ { get; set; }
 
 
         public GType Type { get; set; }
@@ -31,14 +31,14 @@ namespace ProgramReverse
         public Coordinate Prev { get; set; }
         public MyPoint Point { 
             get {
-                return new MyPoint(X, -Y);
+                return new MyPoint(scaleX, -scaleY);
             } }
         public MyPoint Center
         {
             get
             {
                 //return new MyPoint(float.Parse(I.Replace('.', ',')), -float.Parse(J.Replace('.', ',')));
-                return new MyPoint(I, -J);
+                return new MyPoint(scaleI, -scaleJ);
             }
         }
         public Coordinate() { }
@@ -71,9 +71,8 @@ namespace ProgramReverse
 
             X = MyMethods.Calculate(x);
 
-            if (maxX < X)
-                maxX = X;
-           
+
+
 
             //Находим Y
             //В зависимости от того, есть ли радиус и как записан
@@ -91,8 +90,7 @@ namespace ProgramReverse
 
             Y = MyMethods.Calculate(y);
 
-            if(maxY < Y)
-                maxY = Y;
+
 
             if (Type == GType.G2 | Type == GType.G3)
             {
