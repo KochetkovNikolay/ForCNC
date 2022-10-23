@@ -178,7 +178,7 @@ namespace ProgramReverse
         {
             try
             {
-                g.DrawRectangle(DotPen, point.X - 4, -point.Y - 4, 8, 8); // Нарисовать точку 1
+                g.DrawRectangle(DotPen, point.X - 4, point.Y - 4, 8, 8); // Нарисовать точку 1
             }
             catch (Exception)
             {

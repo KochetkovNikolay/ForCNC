@@ -64,7 +64,6 @@ namespace ProgramReverse
             lattices.Clear();
             numbers.Clear();
             ReverseCoordinate.Clear();
-            listView1.Items.Clear();
         }
         private void richTextBox1_KeyPress(object sender, KeyPressEventArgs e) {
             timerNum = 0;
@@ -91,7 +90,6 @@ namespace ProgramReverse
 
                 LatticeSorting(); // Сортировка решеток по возрастанию
 
-                FillingListBox(); // Заполнение списка решеток 
 
                 SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
 
@@ -109,7 +107,7 @@ namespace ProgramReverse
 
                     FullReset(); //Сброс всей информации
 
-                    labelNameFile.Text = MyMethods.ExtractName(file.FileName);  //Выводим имя файла в label
+                    labelNameFile.Text = file.FileName;  //Выводим имя файла в label
 
                     AddingLattices(File.ReadAllLines(file.FileName, Encoding.Default)); // Заносим в список все решетки
 
@@ -119,7 +117,6 @@ namespace ProgramReverse
 
                     LatticeSorting(); // Сортировка решеток по возрастанию
 
-                    FillingListBox(); // Заполнение списка решеток 
 
                     SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
 
@@ -153,11 +150,6 @@ namespace ProgramReverse
                     AllCode[i] = AllCode[i].Replace(lattices[j].getLattice(), lattices[j].Value.ToString());
                 }
         }
-        private void FillingListBox() {
-            foreach (var item in lattices) {
-                listView1.Items.Add(item.getString());
-            }
-        }
 
         private void AddingCoordinate() {
             foreach (var item in AllCode) {
@@ -188,15 +180,15 @@ namespace ProgramReverse
                         canvas.DrawLine(coordinates[i - 1].Point, coordinates[i].Point);
                     if (coordinates[i].Type == GType.G2)
                     {
-                        if (coordinates[i].Radius != null)
-                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, MyMethods.Calculate(coordinates[i].Radius), direction.clockwise);
+                        if (coordinates[i].Radius != 0)
+                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Radius, direction.clockwise);
                         else
                             canvas.DrawArcByCenter(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Center, direction.clockwise);
                     }
                     if (coordinates[i].Type == GType.G3)
                     {
-                        if (coordinates[i].Radius != null)
-                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, MyMethods.Calculate(coordinates[i].Radius), direction.counter);
+                        if (coordinates[i].Radius != 0)
+                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Radius, direction.counter);
                         else
                             canvas.DrawArcByCenter(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Center, direction.counter);
                     }
@@ -204,38 +196,38 @@ namespace ProgramReverse
 
             }
         }
-        private void Reverse()
-        {
+        //private void Reverse()
+        //{
             
-            for (int i = 0, j = coordinates.Count - 1; i < coordinates.Count; i++, j--)
-            {
-                Coordinate newCoordinate = (Coordinate)coordinates[j].Clone();
-                if (newCoordinate.Next != null)
-                {
-                    if (newCoordinate.Next.Type == GType.G2)
-                        newCoordinate.Type = GType.G3;
-                    if (newCoordinate.Next.Type == GType.G3)
-                        newCoordinate.Type = GType.G2;
-                    if (newCoordinate.Next.Type == GType.G1)
-                        newCoordinate.Type = GType.G1;
-                }
-                if (newCoordinate.Type != GType.G1)
-                {
-                    newCoordinate.Radius = newCoordinate.Next.Radius;
-                    newCoordinate.I = newCoordinate.Next.I;
-                    newCoordinate.J = newCoordinate.Next.J;
-                }
-                else
-                {
-                    newCoordinate.Radius = null;
-                    newCoordinate.I = null;
-                    newCoordinate.J = null;
-                }
+        //    for (int i = 0, j = coordinates.Count - 1; i < coordinates.Count; i++, j--)
+        //    {
+        //        Coordinate newCoordinate = (Coordinate)coordinates[j].Clone();
+        //        if (newCoordinate.Next != null)
+        //        {
+        //            if (newCoordinate.Next.Type == GType.G2)
+        //                newCoordinate.Type = GType.G3;
+        //            if (newCoordinate.Next.Type == GType.G3)
+        //                newCoordinate.Type = GType.G2;
+        //            if (newCoordinate.Next.Type == GType.G1)
+        //                newCoordinate.Type = GType.G1;
+        //        }
+        //        if (newCoordinate.Type != GType.G1)
+        //        {
+        //            newCoordinate.Radius = newCoordinate.Next.Radius;
+        //            newCoordinate.I = newCoordinate.Next.I;
+        //            newCoordinate.J = newCoordinate.Next.J;
+        //        }
+        //        else
+        //        {
+        //            newCoordinate.Radius = null;
+        //            newCoordinate.I = null;
+        //            newCoordinate.J = null;
+        //        }
                 
-                ReverseCoordinate.Add(newCoordinate);
-            }
-            SetNextPrev(ReverseCoordinate);
-        }
+        //        ReverseCoordinate.Add(newCoordinate);
+        //    }
+        //    SetNextPrev(ReverseCoordinate);
+        //}
 
        
 
@@ -248,7 +240,7 @@ namespace ProgramReverse
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Reverse();
+            //Reverse();
             richTextBox1.Clear();
             for (int i = 0; i < ReverseCoordinate.Count; i++)
             {
@@ -293,6 +285,17 @@ namespace ProgramReverse
                     }
                 }
             }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            VarForm varForm = new VarForm(lattices);
+            
+            varForm.Show();
+            if (this.Location.X < 130)
+                varForm.Location = new Point(0, this.Location.Y + 20);
+            else
+                varForm.Location = new Point(this.Location.X - 130, this.Location.Y + 20);
         }
     }
 }

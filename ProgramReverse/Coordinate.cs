@@ -19,39 +19,26 @@ namespace ProgramReverse
         static public float minX { get; set; }
         static public float minY { get; set; }
 
-        public string X { get; set; }
-        public string Y { get; set; }
-        public string Radius { get; set; }
-        public string I { get; set; }
-        public string J { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Radius { get; set; }
+        public float I { get; set; }
+        public float J { get; set; }
 
-        public float X_value { get {
-                return MyMethods.Calculate(X.Replace('.', ',')); ;
-            } }
-        public float Y_value { get {
-                return -MyMethods.Calculate(Y.Replace('.', ','));
-            } }
-        public float I_value { get {
-                return MyMethods.Calculate(I.Replace('.', ','));
-            }
-        }
-        public float J_value { get {
-                return MyMethods.Calculate(J.Replace('.', ','));
-            } }
 
         public GType Type { get; set; }
         public Coordinate Next { get; set; }
         public Coordinate Prev { get; set; }
         public MyPoint Point { 
             get {
-                return new MyPoint(X_value, Y_value);
+                return new MyPoint(X, -Y);
             } }
         public MyPoint Center
         {
             get
             {
                 //return new MyPoint(float.Parse(I.Replace('.', ',')), -float.Parse(J.Replace('.', ',')));
-                return new MyPoint(I_value, -J_value);
+                return new MyPoint(I, -J);
             }
         }
         public Coordinate() { }
@@ -80,9 +67,12 @@ namespace ProgramReverse
 
             //Находим X
             string x = line.Substring(indexX, indexY - indexX);
-            X = x.Remove(x.IndexOf('X'), 1); //Удалить сам X
-            if (maxX < X_value)
-                maxX = X_value;
+            x = x.Remove(x.IndexOf('X'), 1); //Удалить сам X
+
+            X = MyMethods.Calculate(x);
+
+            if (maxX < X)
+                maxX = X;
            
 
             //Находим Y
@@ -97,10 +87,12 @@ namespace ProgramReverse
             else                                                //Если есть центр дуги и I впереди
                 y = line.Substring(indexY, indexI - indexY);
 
-            Y = y.Remove(y.IndexOf('Y'), 1); //Удалить сам Y
+            y = y.Remove(y.IndexOf('Y'), 1); //Удалить сам Y
 
-            if(maxY < Y_value)
-                maxY = Y_value;
+            Y = MyMethods.Calculate(y);
+
+            if(maxY < Y)
+                maxY = Y;
 
             if (Type == GType.G2 | Type == GType.G3)
             {
@@ -109,7 +101,7 @@ namespace ProgramReverse
                     string r;
                     r = line.Substring(indexR, line.Length - indexR);
                     r = r.Replace("R", "");
-                    Radius = r.Trim();
+                    Radius = MyMethods.Calculate(r);
                 }
 
                 else
@@ -124,12 +116,11 @@ namespace ProgramReverse
                         i = line.Substring(indexI, line.Length - indexI);
                         j = line.Substring(indexJ, indexI - indexJ);
                     }
+                    i = i.Remove(i.IndexOf('I'), 1);
+                    I = MyMethods.Calculate(i);
 
-                    i = i.Replace("I", "");
-                    I = i.Trim();
-
-                    j = j.Replace("J", "");
-                    J = j.Trim();
+                    j = j.Remove(j.IndexOf('J'), 1);
+                    J = MyMethods.Calculate(j);
 
                 }
             }
