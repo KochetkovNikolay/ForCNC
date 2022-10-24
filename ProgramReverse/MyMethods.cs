@@ -191,7 +191,7 @@ namespace ProgramReverse
 
 
 
-        static private bool IsOperator(string op) {
+        static public bool IsOperator(string op) {
             if (op == "+" || op == "-" || op == "*" || op == "/" || op == "COS" || op == "SIN")
                 return true;
             return false;

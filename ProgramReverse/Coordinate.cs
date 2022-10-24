@@ -20,6 +20,7 @@ namespace ProgramReverse
         public float Y { get; set; }
         public float I { get; set; }
         public float J { get; set; }
+        public float ScaleR { get; set; }
         public float scaleX { get; set; }
         public float scaleY { get; set; }
         public float scaleI { get; set; }
@@ -46,7 +47,7 @@ namespace ProgramReverse
         {
             line = line.Replace('[', '(');
             line = line.Replace(']', ')');
-
+            line = line.Replace('.', ',');
             //Определяем линия это или дуга
             if (line.IndexOf("G1") != -1)
                 this.Type = GType.G1;

@@ -17,7 +17,12 @@ namespace ProgramReverse
         PictureBox picBox;
         Graphics g;
         Bitmap bitmap;
+        public Color BackColor { get; set; } = Color.FromArgb(30, 30, 30);
         public Pen DotPen { get; set; } = new Pen(new SolidBrush(Color.White), 2);
+        public Pen ThinSilver  { get; set; } = new Pen(new SolidBrush(Color.Silver), 1);
+        public Pen ForArcCenter { get; set; } = new Pen(new SolidBrush(Color.DarkOrange), 1);
+        public Pen ForArc { get; set; } = new Pen(new SolidBrush(Color.DarkOrange), 2);
+        public Pen ForAxes { get; set; } = new Pen(new SolidBrush(Color.Orange), 1);
         public MyCanvas(PictureBox pictureBox)
         {
             picBox = pictureBox;
@@ -90,7 +95,9 @@ namespace ProgramReverse
 
 
 
-            DrawPoint(point1); // Нарисовать точку 1
+            DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+            DrawPoint(point2, ThinSilver); // Нарисовать точку 1
+            DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
             //DrawPoint(point2); // Нарисовать точку 2
 
             //g.DrawLine(DotPen, point1.X, point1.Y, point2.X, point2.Y);
@@ -99,12 +106,10 @@ namespace ProgramReverse
 
 
             DrawArc(center, radius, angle1, angle2);
-
-            picBox.Refresh();
         }
         public void Clear()
         {
-            g.Clear(Color.Gray);
+            g.Clear(BackColor);
         }
         public void DrawArcByRadius(MyPoint point1, MyPoint point2, float radius, direction direct)
         {
@@ -157,28 +162,32 @@ namespace ProgramReverse
             float angle2 = MyMath.AngleOfIsoscelesTriangle(radius, MyMath.Distance(point1, point2));
 
 
-            DrawPoint(point1); // Нарисовать точку 1
-            //DrawPoint(point2); // Нарисовать точку 2
-            DrawPoint(center); // Нарисовать центр дуги
+            DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+            DrawPoint(point2, ThinSilver); // Нарисовать точку 2
+            DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
 
             DrawArc(center, radius, angle1, angle2);
-
-            picBox.Refresh();
         }
 
         public void DrawLine(MyPoint point1, MyPoint point2)
         {
             g.DrawLine(DotPen, point1.X, point1.Y, point2.X, point2.Y);
-            DrawPoint(point1);
-            DrawPoint(point2);
-            picBox.Refresh();
+            DrawPoint(point1, ThinSilver);
+            DrawPoint(point2, ThinSilver);
+        }
+        public void DrawAxes(MyPoint point1, MyPoint point2)
+        {
+            g.DrawLine(ForAxes, point1.X, point1.Y, point2.X, point2.Y);
         }
 
-        private void DrawPoint(MyPoint point)
+        public void Refresh() => picBox.Refresh();
+
+
+        private void DrawPoint(MyPoint point, Pen pen)
         {
             try
             {
-                g.DrawRectangle(DotPen, point.X - 4, point.Y - 4, 8, 8); // Нарисовать точку 1
+                g.DrawRectangle(pen, point.X - 3, point.Y - 3, 6, 6); // Нарисовать точку 1
             }
             catch (Exception)
             {
@@ -189,7 +198,7 @@ namespace ProgramReverse
         {
             try
             {
-                g.DrawArc(DotPen, vector.X - r, vector.Y - r, r * 2, r * 2, -angle1, angle2);
+                g.DrawArc(ForArc, vector.X - r, vector.Y - r, r * 2, r * 2, -angle1, angle2);
             }
             catch (Exception)
             {

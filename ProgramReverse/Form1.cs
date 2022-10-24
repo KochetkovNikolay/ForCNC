@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using static System.Net.WebRequestMethods;
-using File = System.IO.File;
 
 namespace ProgramReverse
 {
@@ -21,6 +19,28 @@ namespace ProgramReverse
 
     public partial class Form1 : Form
     {
+
+        VarForm varForm;
+        public bool FormIsOpen { get; set; } = false;
+
+        private bool fileIsOpen = false;
+        public bool FileIsOpen { 
+            get { return fileIsOpen; }
+            set { 
+            if(value == true)
+                {
+                    fileIsOpen = true;
+                    button2.Enabled = true;
+                    SaveButton.Enabled = true;
+                    RegenButton.Enabled = true;
+                }
+            } }
+        public float Padd { get; set; } = 20;
+        public int LenghtOfAxes { get; set; } = 100;
+        public PointF shiftOfMouse;
+
+        public PointF MouseLocation { get; set; }
+
         //Для хренения максимальных и минимальных значений
         public float maxX { get; set; }
         public float maxY { get; set; }
@@ -28,11 +48,12 @@ namespace ProgramReverse
         public float minY { get; set; }
         public float shiftX { get; set; }
         public float shiftY { get; set; }
+        public PointF Zero { get; set; }
 
         /// <summary>
         /// Отступ рисунка от краев
         /// </summary>
-        public float Padding { get; set; } = 20;
+        
 
         public float Scale { get; set; }
 
@@ -53,6 +74,18 @@ namespace ProgramReverse
             InitializeComponent();
             coordinates = new List<Coordinate>();
             canvas = new MyCanvas(pictureBox1);
+            pictureBox1.MouseWheel += PictureBox1_MouseWheel;
+            varForm = new VarForm(lattices);
+        }
+
+        private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+                Scale += 0.1f;
+            else
+                Scale -= 0.1f;
+                    
+            DrawProgram(coordinates);
         }
 
         private void panel1_DragEnter(object sender, DragEventArgs e)
@@ -96,25 +129,39 @@ namespace ProgramReverse
             if (timerNum == 2) {
                 if (!richTextBox1.Focused)
                     return;
+                try
+                {
+                    FullReset(); //Сброс всей информации
 
-                FullReset(); //Сброс всей информации
+                    AddingLattices(richTextBox1.Lines); // Заносим в список все решетки
 
-                AddingLattices(richTextBox1.Lines); // Заносим в список все решетки
+                    LatticesReplace(); // Замена всех решеток на значения в исходном файле
 
-                LatticesReplace(); // Замена всех решеток на значения в исходном файле
+                    AddingCoordinate(); //Парсим и добавляем координаты
 
-                AddingCoordinate(); //Парсим и добавляем координаты
+                    LatticeSorting(); // Сортировка решеток по возрастанию
 
-                LatticeSorting(); // Сортировка решеток по возрастанию
+                    SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
 
-                SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
-
-                DrawProgram(coordinates); // Рисуем
+                    DrawProgram(coordinates); // Рисуем
+                    label2.Visible = false;
+                }
+                catch (Exception)
+                {
+                    label2.Visible = true;
+                }
+                
                
                 timerNum = 0;
                 timer1.Stop();
             }
         }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+                System.IO.File.WriteAllText(labelNameFile.Text, richTextBox1.Text, Encoding.Default);
+        }
+
         private void panel1_Click(object sender, EventArgs e) {
             using (OpenFileDialog file = new OpenFileDialog()) {
                 file.Title = "Выбери файл";
@@ -131,6 +178,8 @@ namespace ProgramReverse
 
                     AddingCoordinate(); //Парсим и добавляем координаты
 
+                    MaxMinDisplay();
+
                     LatticeSorting(); // Сортировка решеток по возрастанию
 
                     SetNextPrev(coordinates); //Задаем указываем каждой координате ссылку на предыдущую
@@ -139,8 +188,15 @@ namespace ProgramReverse
                     richTextBox1.ScrollToCaret(); 
 
                     DrawProgram(coordinates); // Рисуем
+                    FileIsOpen = true;
                 }
             }
+        }
+
+        private void MaxMinDisplay()
+        {
+            labelLimitX.Text = "X " + minX.ToString() + "; " + maxX.ToString();
+            labelLimitY.Text = "Y " + minY.ToString() + "; " + maxY.ToString();
         }
 
         private void LatticeSorting() {
@@ -197,28 +253,18 @@ namespace ProgramReverse
                 if (minY > coordinates[i].Y)
                     minY = coordinates[i].Y;
             }
+            SetShiftAndScale();
+        }
+        private void SetShiftAndScale()
+        {
             shiftX = 0 - minX;
             shiftY = 0 - maxY;
 
-            if (maxX - minX > maxY - minY)
-            {
-                Scale = Math.Abs(pictureBox1.Width / (maxX - minX + Padding * 2));
-            }
-            else
-            {
-                Scale = Math.Abs(pictureBox1.Height / (maxY - minY + Padding * 2));
-            }
-            
-            
-
-            foreach (var item in coordinates)
-            {
-                item.scaleI = (item.I + shiftX + Padding) * Scale;
-                item.scaleX = (item.X + shiftX + Padding) * Scale;
-                item.scaleJ = (item.J + shiftY - Padding) * Scale;
-                item.scaleY = (item.Y + shiftY - Padding) * Scale;
-            }
+            Scale = Math.Abs((pictureBox1.Width - Padd * 2) / (maxX - minX));
+            if (pictureBox1.Height - Padd * 2 < (maxY - minY) * Scale)
+                Scale = Math.Abs((pictureBox1.Height - Padd * 2) / (maxY - minY));
         }
+
         private void SetNextPrev(List<Coordinate> coordinates)
         {
             for (int i = 0; i < coordinates.Count; i++)
@@ -232,6 +278,18 @@ namespace ProgramReverse
 
         private void DrawProgram(List<Coordinate> coordinates)
         {
+            foreach (var item in coordinates)
+            {
+                if(item.Radius != 0)
+                    item.ScaleR = item.Radius * Scale;
+                else if (item.Type != GType.G1)
+                {
+                    item.scaleI = (item.I + shiftX) * Scale + Padd;
+                    item.scaleJ = (item.J + shiftY) * Scale - Padd;
+                }
+                    item.scaleX = (item.X + shiftX) * Scale + Padd;
+                    item.scaleY = (item.Y + shiftY) * Scale - Padd;
+            }
             canvas.Clear();
             for (int i = 0; i < coordinates.Count; i++)
             {
@@ -242,24 +300,30 @@ namespace ProgramReverse
                     if (coordinates[i].Type == GType.G2)
                     {
                         if (coordinates[i].Radius != 0)
-                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Radius, direction.clockwise);
+                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].ScaleR, direction.clockwise);
                         else
                             canvas.DrawArcByCenter(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Center, direction.clockwise);
                     }
                     if (coordinates[i].Type == GType.G3)
                     {
                         if (coordinates[i].Radius != 0)
-                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Radius, direction.counter);
+                            canvas.DrawArcByRadius(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].ScaleR, direction.counter);
                         else
                             canvas.DrawArcByCenter(coordinates[i - 1].Point, coordinates[i].Point, coordinates[i].Center, direction.counter);
                     }
                 }
 
             }
+            //Нарисовать оси
+            canvas.DrawAxes(new MyPoint(shiftX * Scale + Padd, -shiftY * Scale + Padd), new MyPoint(shiftX * Scale + Padd, -shiftY * Scale - LenghtOfAxes + Padd));
+            canvas.DrawAxes(new MyPoint(shiftX * Scale + Padd, -shiftY * Scale + Padd), new MyPoint(shiftX * Scale + LenghtOfAxes + Padd, -shiftY * Scale + Padd));
+            canvas.DrawAxes(new MyPoint(shiftX * Scale + Padd, -shiftY * Scale + Padd), new MyPoint(shiftX * Scale + Padd, -shiftY * Scale + LenghtOfAxes + Padd));
+            canvas.DrawAxes(new MyPoint(shiftX * Scale + Padd, -shiftY * Scale + Padd), new MyPoint(shiftX * Scale - LenghtOfAxes + Padd, -shiftY * Scale + Padd));
+            canvas.Refresh();
         }
         //private void Reverse()
         //{
-            
+
         //    for (int i = 0, j = coordinates.Count - 1; i < coordinates.Count; i++, j--)
         //    {
         //        Coordinate newCoordinate = (Coordinate)coordinates[j].Clone();
@@ -284,20 +348,36 @@ namespace ProgramReverse
         //            newCoordinate.I = null;
         //            newCoordinate.J = null;
         //        }
-                
+
         //        ReverseCoordinate.Add(newCoordinate);
         //    }
         //    SetNextPrev(ReverseCoordinate);
         //}
 
-       
+
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            label1.Text = new PointF(e.Location.X * Scale, (e.Location.Y * Scale)).ToString();
+            label1.Text = "X: " + ((e.Location.X - Padd) / Scale - shiftX).ToString("0.00") + "; Y: " + ((e.Location.Y - Padd) / Scale + shiftY).ToString("0.00");
+            if(e.Button == MouseButtons.Left)
+            {
+                shiftOfMouse = new PointF(MouseLocation.X - e.Location.X, MouseLocation.Y - e.Location.Y);
+
+                shiftX -= shiftOfMouse.X / Scale;
+                shiftY += shiftOfMouse.Y / Scale;
+
+                MouseLocation = e.Location;
+                DrawProgram(coordinates);
+            }
+            
         }
 
-        
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            MouseLocation = e.Location;
+            
+        }
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -327,7 +407,7 @@ namespace ProgramReverse
             foreach (var lattice in nums) {
                 string temp = "";
                 for (int i = lattice + 1; i < str.Length; i++) {
-                    if (char.IsDigit(str[i]) || str[i] == ',' || str[i] == '=' || str[i] == ']' || str[i] == '[' || str[i] == '#' || str[i] == '-') {
+                    if (char.IsDigit(str[i]) || str[i] == ',' || str[i] == '=' || str[i] == ']' || str[i] == '[' || str[i] == '#' || MyMethods.IsOperator(str[i].ToString())) {
                         temp += str[i];
                     } else {
                         if (temp.IndexOf('=') == -1)
@@ -350,13 +430,30 @@ namespace ProgramReverse
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            VarForm varForm = new VarForm(lattices);
-            
-            varForm.Show();
+            if(!varForm.Created)
+                varForm = new VarForm(lattices);
+            if (!varForm.IsOpened)
+            {
+                varForm.Show();
+            }
             if (this.Location.X < 130)
                 varForm.Location = new Point(0, this.Location.Y + 20);
             else
                 varForm.Location = new Point(this.Location.X - 130, this.Location.Y + 20);
         }
+
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RegenButton_Click(object sender, EventArgs e)
+        {
+            SetShiftAndScale();
+            DrawProgram(coordinates);
+        }
+
+
     }
 }
