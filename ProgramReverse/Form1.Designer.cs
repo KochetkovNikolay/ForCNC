@@ -112,7 +112,7 @@
             this.labelNameFile.AutoSize = true;
             this.labelNameFile.BackColor = System.Drawing.Color.Transparent;
             this.labelNameFile.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelNameFile.ForeColor = System.Drawing.Color.DarkOrange;
+            this.labelNameFile.ForeColor = System.Drawing.Color.White;
             this.labelNameFile.Location = new System.Drawing.Point(3, 321);
             this.labelNameFile.Name = "labelNameFile";
             this.labelNameFile.Size = new System.Drawing.Size(37, 15);

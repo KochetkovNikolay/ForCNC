@@ -90,6 +90,12 @@ namespace ProgramReverse
                         output_string.Push(Math.Sin(double.Parse(output_string.Pop())).ToString());
                         continue;
                     }
+                    if (input_string.Peek() == "SQRT")
+                    {
+                        input_string.Dequeue();
+                        output_string.Push(Math.Sqrt(double.Parse(output_string.Pop())).ToString());
+                        continue;
+                    }
                     if (output_string.Count == 1) {
                         string temp = output_string.Pop();
                         output_string.Push("0");
@@ -192,7 +198,7 @@ namespace ProgramReverse
 
 
         static public bool IsOperator(string op) {
-            if (op == "+" || op == "-" || op == "*" || op == "/" || op == "COS" || op == "SIN")
+            if (op == "+" || op == "-" || op == "*" || op == "/" || op == "COS" || op == "SIN" || op == "SQRT")
                 return true;
             return false;
         }

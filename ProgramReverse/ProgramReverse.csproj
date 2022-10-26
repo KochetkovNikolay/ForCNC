@@ -66,6 +66,7 @@
     <Compile Include="VarForm.Designer.cs">
       <DependentUpon>VarForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Variable.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
