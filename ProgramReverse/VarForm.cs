@@ -21,7 +21,7 @@ namespace ProgramReverse
         private void VarForm_Load(object sender, EventArgs e)
         {
             foreach (var item in varList)
-                listView1.Items.Add(item.getString());
+                listBox1.Items.Add(item.getString());
             IsOpened = true;
         }
 

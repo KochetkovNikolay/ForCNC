@@ -27,67 +27,85 @@ namespace ProgramReverse
         static private Stack<string> operators_stack = new Stack<string>(); //Промежуточное хранение операторов
         static private Stack<string> output_string = new Stack<string>(); //Для результата
 
+        static public void Clear()
+        {
+            firstList.Clear();
+            input_string.Clear();
+            operators_stack.Clear();
+            output_string.Clear();
+        }
 
 
-
-        static public float Calculate(string expression) {
-            if (expression.IndexOf('+') == - 1 && expression.IndexOf('-') == -1 &&
-                expression.IndexOf('/') == -1 && expression.IndexOf('*') == -1 &&
-                expression.IndexOf('(') == -1 && expression.IndexOf(')') == -1)
+        static public float Calculate(string expression)
+        {
+            if (expression.IndexOf('+') == -1 && expression.IndexOf('-') == -1 &&
+            expression.IndexOf('/') == -1 && expression.IndexOf('*') == -1 &&
+            expression.IndexOf('(') == -1 && expression.IndexOf(')') == -1)
                 return float.Parse(expression);
 
 
             string tempD = "";
             string tempL = "";
 
-            expression = expression.Replace(" ", "");
-
-            for (int i = 0; i < expression.Length; i++) {
-                if (char.IsDigit(expression[i]) || expression[i] == ',' || (IsOperator(expression[i].ToString()) && (i == 0 || (IsOperator(expression[i - 1].ToString()) || expression[i - 1] == '(')))) {
+            for (int i = 0; i < expression.Length; i++)
+            {
+                if (char.IsDigit(expression[i]) || expression[i] == ',' || (IsOperator(expression[i].ToString()) && (i == 0 || (IsOperator(expression[i - 1].ToString()) || expression[i - 1] == '('))))
+                {
                     tempD += expression[i];
-                    if (tempL != "") {
+                    if (tempL != "")
+                    {
                         firstList.Enqueue(tempL);
                         tempL = "";
                     }
-                } else if (char.IsLetter(expression[i]))
+                }
+                else if (char.IsLetter(expression[i]))
                     tempL += expression[i];
-                else if (IsOperator(expression[i].ToString()) || expression[i] == '(' || expression[i] == ')') {
-                    if (tempD != "") {
-                        if (tempD != "") {
-                            firstList.Enqueue(tempD);
-                            tempD = "";
-                        }
-                        if (tempL != "") {
-                            firstList.Enqueue(tempL);
-                            tempL = "";
-                        }
+                else if (IsOperator(expression[i].ToString()) || expression[i] == '(' || expression[i] == ')')
+                {
+                    if (tempD != "")
+                    {
+                        firstList.Enqueue(tempD);
+                        tempD = "";
+                    }
+                    if (tempL != "")
+                    {
+                        firstList.Enqueue(tempL);
+                        tempL = "";
                     }
                     firstList.Enqueue(expression[i].ToString());
                 }
             }
-            if (tempD != "") {
+            if (tempD != "")
+            {
                 firstList.Enqueue(tempD);
                 tempD = "";
             }
-            if (tempL != "") {
+            if (tempL != "")
+            {
                 firstList.Enqueue(tempL);
                 tempL = "";
             }
 
             TranslationInPolish(firstList);
-
-            while (input_string.Any()) {
-                if (IsDigit(input_string.Peek())) {
+            int t = 0;
+            while (input_string.Any())
+            {
+                if (IsDigit(input_string.Peek()))
+                {
                     output_string.Push(input_string.Dequeue());
-                } else {
-                    if (input_string.Peek() == "COS") {
+                }
+                else
+                {
+                    if (input_string.Peek() == "COS")
+                    {
                         input_string.Dequeue();
-                        output_string.Push(Math.Cos(double.Parse(output_string.Pop())).ToString());
+                        output_string.Push(Math.Cos(double.Parse(output_string.Pop()) * 0.0175).ToString());
                         continue;
                     }
-                    if (input_string.Peek() == "SIN") {
+                    if (input_string.Peek() == "SIN")
+                    {
                         input_string.Dequeue();
-                        output_string.Push(Math.Sin(double.Parse(output_string.Pop())).ToString());
+                        output_string.Push(Math.Sin(double.Parse(output_string.Pop()) * 0.0175).ToString());
                         continue;
                     }
                     if (input_string.Peek() == "SQRT")
@@ -96,7 +114,8 @@ namespace ProgramReverse
                         output_string.Push(Math.Sqrt(double.Parse(output_string.Pop())).ToString());
                         continue;
                     }
-                    if (output_string.Count == 1) {
+                    if (output_string.Count == 1)
+                    {
                         string temp = output_string.Pop();
                         output_string.Push("0");
                         output_string.Push(temp);
@@ -105,10 +124,14 @@ namespace ProgramReverse
                 }
             }
             return float.Parse(output_string.Pop());
+
         }
 
-        static private string Calc(string operand1, string operand2, string type) {
-            switch (type) {
+
+        static private string Calc(string operand1, string operand2, string type)
+        {
+            switch (type)
+            {
                 case "+":
                     return (double.Parse(operand2) + double.Parse(operand1)).ToString();
                 case "-":
@@ -126,67 +149,91 @@ namespace ProgramReverse
             }
             return "";
         }
-        static private bool IsDigit(string str) {
-            try {
+        static private bool IsDigit(string str)
+        {
+            try
+            {
                 double.Parse(str);
                 return true;
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }
 
 
-        static private void TranslationInPolish(Queue<string> expression) {
+        static private void TranslationInPolish(Queue<string> expression)
+        {
             input_string.Clear();
             operators_stack.Clear();
 
-            while (firstList.Any()) {  //Если символ это цифра или точка
-                if (IsDigit(firstList.Peek())) {
+            while (firstList.Any())
+            {  //Если символ это цифра или точка
+                if (IsDigit(firstList.Peek()))
+                {
                     input_string.Enqueue(firstList.Dequeue());
                     continue;
                 }
-                if (IsOperator(firstList.Peek())) {  //Если символ это оператор
+                if (IsOperator(firstList.Peek()))
+                {  //Если символ это оператор
 
-                    if (operators_stack.Count == 0) {  //Если это первый встреченный оператор
+                    if (operators_stack.Count == 0)
+                    {  //Если это первый встреченный оператор
                         operators_stack.Push(firstList.Dequeue());  //то положим его в стек
                         continue;
-                    } else {                                                        //Если операторы в стеке уже присутствуют,
-                        if (GetPriority(operators_stack.Peek()) < GetPriority(firstList.Peek())) {  //то помещаем символ в стек, если его приоритет выше последнего в стеке
+                    }
+                    else
+                    {                                                        //Если операторы в стеке уже присутствуют,
+                        if (GetPriority(operators_stack.Peek()) < GetPriority(firstList.Peek()))
+                        {  //то помещаем символ в стек, если его приоритет выше последнего в стеке
                             operators_stack.Push(firstList.Dequeue());
                             continue;
                         }
                     }
-                    if (operators_stack.Count != 0) {
-                        try {
+                    if (operators_stack.Count != 0)
+                    {
+                        try
+                        {
                             while (GetPriority(operators_stack.Peek()) >= GetPriority(firstList.Peek()))  //Пока приоритет операторов в стеке выше проверяемого
                                 input_string.Enqueue(operators_stack.Pop());  //помещаем их в выходной стек
-                        } catch { }
-                        if (operators_stack.Count == 0) {  //Если стек операторов опустел
+                        }
+                        catch { }
+                        if (operators_stack.Count == 0)
+                        {  //Если стек операторов опустел
                             operators_stack.Push(firstList.Dequeue());  //помещаем проверяемый оператор в стек
                             continue;
-                        } else if (operators_stack.Count != 0) {
-                            if (GetPriority(operators_stack.Peek()) < GetPriority(firstList.Peek())) {
+                        }
+                        else if (operators_stack.Count != 0)
+                        {
+                            if (GetPriority(operators_stack.Peek()) < GetPriority(firstList.Peek()))
+                            {
                                 operators_stack.Push(firstList.Dequeue());
                                 continue;
                             }
                         }
                     }
                 }
-                if (firstList.Peek() == "(") {  //Если символ это открывающая скобка, то всегда помещаем ее в стек
+                if (firstList.Peek() == "(")
+                {  //Если символ это открывающая скобка, то всегда помещаем ее в стек
 
                     operators_stack.Push(firstList.Dequeue());
                     continue;
                 }
 
-                if (firstList.Peek() == ")") {  //Если символ это закрывающая скобка
+                if (firstList.Peek() == ")")
+                {  //Если символ это закрывающая скобка
 
-                    while (operators_stack.Peek() != "(") {   //то заносим операторы в выходной стек, пока не обнаружится открывающая скобка
+                    while (operators_stack.Peek() != "(")
+                    {   //то заносим операторы в выходной стек, пока не обнаружится открывающая скобка
                         input_string.Enqueue(operators_stack.Pop());
                     }
                     operators_stack.Pop();  //Удаляем открывающую скобку
                     firstList.Dequeue();
                     continue;
                 }
+                else
+                    return;
             }
             while (operators_stack.Count != 0)
                 input_string.Enqueue(operators_stack.Pop());
@@ -197,14 +244,17 @@ namespace ProgramReverse
 
 
 
-        static public bool IsOperator(string op) {
+        static public bool IsOperator(string op)
+        {
             if (op == "+" || op == "-" || op == "*" || op == "/" || op == "COS" || op == "SIN" || op == "SQRT")
                 return true;
             return false;
         }
 
-        static private int GetPriority(string op) {
-            switch (op) {
+        static private int GetPriority(string op)
+        {
+            switch (op)
+            {
                 case "+":
                     return 2;
                 case "-":

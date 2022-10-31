@@ -12,17 +12,67 @@ namespace ProgramReverse
         clockwise,
         counter
     }
+    enum type
+    {
+        normal,
+        click
+    }
     internal class MyCanvas
     {
         PictureBox picBox;
         Graphics g;
         Bitmap bitmap;
+        type Type = type.normal;
+        public int LenghtOfAxes { get; set; } = 100;
         public Color BackColor { get; set; } = Color.FromArgb(30, 30, 30);
-        public Pen DotPen { get; set; } = new Pen(new SolidBrush(Color.White), 2);
-        public Pen ThinSilver  { get; set; } = new Pen(new SolidBrush(Color.Silver), 1);
+        public Pen ForLineG0
+        {
+            get
+            {
+                if (Type == type.normal)
+                {
+                    Pen newPen = new Pen(Color.White, 1);
+                    newPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+                    return newPen;
+                }
+                else
+                {
+                    return new Pen(new SolidBrush(Color.Blue), 1);
+                }
+            }
+        }
+        public Pen ForLine
+        {
+            get
+            {
+                if (Type == type.normal)
+                {
+                    return new Pen(new SolidBrush(Color.White), 2);
+                }
+                else
+                {
+                    return new Pen(new SolidBrush(Color.Blue), 2);
+                }
+            }
+        }
+        public Pen ThinSilver { get; set; } = new Pen(new SolidBrush(Color.Silver), 1);
         public Pen ForArcCenter { get; set; } = new Pen(new SolidBrush(Color.DarkOrange), 1);
-        public Pen ForArc { get; set; } = new Pen(new SolidBrush(Color.DarkOrange), 2);
+        public Pen ForArc
+        {
+            get
+            {
+                if (Type == type.normal)
+                {
+                    return new Pen(new SolidBrush(Color.DarkOrange), 2);
+                }
+                else
+                {
+                    return new Pen(new SolidBrush(Color.Blue), 2);
+                }
+            }
+        }
         public Pen ForAxes { get; set; } = new Pen(new SolidBrush(Color.Orange), 1);
+        public static int Padding { get; set; } = 20;
         public MyCanvas(PictureBox pictureBox)
         {
             picBox = pictureBox;
@@ -54,16 +104,16 @@ namespace ProgramReverse
 
             float angle1 = 0;
             //Расчет начального угла
-            if (point1.X > center.X && point1.Y < center.Y)
+            if (point1.X >= center.X && point1.Y <= center.Y)
             {
                 angle1 = (float)Math.Asin(Math.Abs(point1.Y - center.Y) / radius);
                 angle1 = angle1 / 0.0175f; // Перевод в градусы
             }
-            else if (point1.X <= center.X && point1.Y < center.Y)
+            else if (point1.X <= center.X && point1.Y <= center.Y)
             {
                 angle1 = MyMath.AngleOfIsoscelesTriangle(radius, MyMath.Distance(point1, new MyPoint(center.X + radius, center.Y)));
             }
-            else if (point1.X <= center.X && point1.Y > center.Y)
+            else if (point1.X <= center.X && point1.Y >= center.Y)
             {
                 angle1 = MyMath.AngleOfIsoscelesTriangle(radius, MyMath.Distance(point1, new MyPoint(center.X - radius, center.Y)));
                 angle1 += 180;
@@ -95,14 +145,9 @@ namespace ProgramReverse
 
 
 
-            DrawPoint(point1, ThinSilver); // Нарисовать точку 1
-            DrawPoint(point2, ThinSilver); // Нарисовать точку 1
-            DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
-            //DrawPoint(point2); // Нарисовать точку 2
-
-            //g.DrawLine(DotPen, point1.X, point1.Y, point2.X, point2.Y);
-            //g.DrawLine(DotPen, center.X, 0, center.X, 1000);
-            //g.DrawLine(DotPen, 0, center.Y, 2000, center.Y);
+            //DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+            //DrawPoint(point2, ThinSilver); // Нарисовать точку 1
+            //DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
 
 
             DrawArc(center, radius, angle1, angle2);
@@ -162,18 +207,24 @@ namespace ProgramReverse
             float angle2 = MyMath.AngleOfIsoscelesTriangle(radius, MyMath.Distance(point1, point2));
 
 
-            DrawPoint(point1, ThinSilver); // Нарисовать точку 1
-            DrawPoint(point2, ThinSilver); // Нарисовать точку 2
-            DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
+            //DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+            //DrawPoint(point2, ThinSilver); // Нарисовать точку 2
+            //DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
 
             DrawArc(center, radius, angle1, angle2);
         }
 
         public void DrawLine(MyPoint point1, MyPoint point2)
         {
-            g.DrawLine(DotPen, point1.X, point1.Y, point2.X, point2.Y);
-            DrawPoint(point1, ThinSilver);
-            DrawPoint(point2, ThinSilver);
+            g.DrawLine(ForLine, point1.X, point1.Y, point2.X, point2.Y);
+            //DrawPoint(point1, ThinSilver);
+            //DrawPoint(point2, ThinSilver);
+        }
+        public void DrawLineG0(MyPoint point1, MyPoint point2)
+        {
+            g.DrawLine(ForLineG0, point1.X, point1.Y, point2.X, point2.Y);
+            //DrawPoint(point1, ThinSilver);
+            //DrawPoint(point2, ThinSilver);
         }
         public void DrawAxes(MyPoint point1, MyPoint point2)
         {
@@ -203,6 +254,127 @@ namespace ProgramReverse
             catch (Exception)
             {
             }
+        }
+        public void DrawOneLine(Data data, int number, Label label)
+        {
+            Type = type.normal;
+            List<Coordinate> twoCoordinate = new List<Coordinate>();
+
+            //Установка значений в масштабе
+            foreach (var item in data.Coordinates)
+            {
+                if (item.Radius != 0)
+                    item.ScaleR = item.Radius * data.MyScale;
+                else if (item.Type != GType.G1 && item.Type != GType.G0)
+                {
+                    item.scaleI = (item.I + data.shiftX) * data.MyScale + Padding;
+                    item.scaleJ = (item.J + data.shiftY) * data.MyScale - Padding;
+                }
+                item.scaleX = (item.X + data.shiftX) * data.MyScale + Padding;
+                item.scaleY = (item.Y + data.shiftY) * data.MyScale - Padding;
+               
+                if (item.NumLine == number && item.Prev != null)
+                {
+                    twoCoordinate.Add(item.Prev);
+                    twoCoordinate.Add(item);
+                    label.Text = "X: " + Math.Round(item.X, 2).ToString() + " Y: " + Math.Round(item.Y, 2).ToString();
+                }
+            }
+
+            Clear();
+
+            Draw(data.Coordinates);
+
+            Type = type.click;
+
+            Draw(twoCoordinate);
+
+            //Нарисовать оси
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale - LenghtOfAxes + Padding));
+
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale + LenghtOfAxes + Padding, -data.shiftY * data.MyScale + Padding));
+
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + LenghtOfAxes + Padding));
+
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale - LenghtOfAxes + Padding, -data.shiftY * data.MyScale + Padding));
+
+
+
+            Refresh();
+
+        }
+
+        private void Draw(List<Coordinate> list)
+        {
+            for (int i = 1; i < list.Count; i++)
+            {
+                if (list[i].Type == GType.G0)
+                    if (i == 0)
+                    {
+                        DrawLineG0(new Coordinate { X = 0, Y = 0, Type = GType.G0 }.Point, list[i].Point);
+                    }
+                    else
+                    {
+                        DrawLineG0(list[i - 1].Point, list[i].Point);
+                    }
+                if (list[i].Type == GType.G1)
+                    DrawLine(list[i - 1].Point, list[i].Point);
+                if (list[i].Type == GType.G2)
+                {
+                    if (list[i].Radius != 0)
+                        DrawArcByRadius(list[i - 1].Point, list[i].Point, list[i].ScaleR, direction.clockwise);
+                    else
+                        DrawArcByCenter(list[i - 1].Point, list[i].Point, list[i].Center, direction.clockwise);
+                }
+                if (list[i].Type == GType.G3)
+                {
+                    if (list[i].Radius != 0)
+                        DrawArcByRadius(list[i - 1].Point, list[i].Point, list[i].ScaleR, direction.counter);
+                    else
+                        DrawArcByCenter(list[i - 1].Point, list[i].Point, list[i].Center, direction.counter);
+                }
+            }
+        }
+
+        public void DrawProgram(Data data)
+        {
+            Type = type.normal;
+            //Установка значений в масштабе
+            foreach (var item in data.Coordinates)
+            {
+                if (item.Radius != 0)
+                    item.ScaleR = item.Radius * data.MyScale;
+                else if (item.Type != GType.G1 && item.Type != GType.G0)
+                {
+                    item.scaleI = (item.I + data.shiftX) * data.MyScale + Padding;
+                    item.scaleJ = (item.J + data.shiftY) * data.MyScale - Padding;
+                }
+                item.scaleX = (item.X + data.shiftX) * data.MyScale + Padding;
+                item.scaleY = (item.Y + data.shiftY) * data.MyScale - Padding;
+            }
+
+
+            Clear();
+
+            Draw(data.Coordinates);
+
+            //Нарисовать оси
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale - LenghtOfAxes + Padding));
+
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale + LenghtOfAxes + Padding, -data.shiftY * data.MyScale + Padding));
+
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + LenghtOfAxes + Padding));
+
+            DrawAxes(new MyPoint(data.shiftX * data.MyScale + Padding, -data.shiftY * data.MyScale + Padding),
+                new MyPoint(data.shiftX * data.MyScale - LenghtOfAxes + Padding, -data.shiftY * data.MyScale + Padding));
+            Refresh();
         }
 
     }

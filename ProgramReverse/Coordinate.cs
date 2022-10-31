@@ -7,6 +7,7 @@ namespace ProgramReverse
 {
     public enum GType
     {
+        G0,
         G1,
         G2,
         G3
@@ -14,7 +15,7 @@ namespace ProgramReverse
     public class Coordinate
     {
 
-
+        public int NumLine { get; set; }
         public float Radius { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
@@ -49,7 +50,9 @@ namespace ProgramReverse
             line = line.Replace(']', ')');
             line = line.Replace('.', ',');
             //Определяем линия это или дуга
-            if (line.IndexOf("G1") != -1)
+            if (line.IndexOf("G0") != -1)
+                this.Type = GType.G0;
+            else if (line.IndexOf("G1") != -1)
                 this.Type = GType.G1;
             else if (line.IndexOf("G2") != -1)
                 this.Type = GType.G2;
@@ -74,11 +77,10 @@ namespace ProgramReverse
 
 
 
-
             //Находим Y
             //В зависимости от того, есть ли радиус и как записан
             string y;
-            if (Type == GType.G1)                               //Если это прямая
+            if (Type == GType.G1 || Type == GType.G0)                               //Если это прямая
                 y = line.Substring(indexY, line.Length - indexY); 
             else if (indexR != -1)                              //Если есть радиус
                 y = line.Substring(indexY, indexR - indexY);
