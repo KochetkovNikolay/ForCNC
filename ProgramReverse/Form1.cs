@@ -26,6 +26,28 @@ namespace ProgramReverse
         Data data;
         public bool FormIsOpen { get; set; } = false;
 
+        bool isChanged = false;
+        public bool IsChanged
+        {
+            get
+            {
+                return isChanged;
+            }
+            set
+            {
+                if (value == false)
+                {
+                    isChanged = false;
+                    confirmButton.Enabled = false;
+                }
+                else
+                {
+                    isChanged = true;
+                    confirmButton.Enabled = true;
+                }
+            }
+
+        }
         private bool fileIsOpen = false;
         public bool FileIsOpen
         {
@@ -80,6 +102,19 @@ namespace ProgramReverse
             }
         }
 
+        protected override void WndProc(ref Message m) {
+            if (m.Msg == NativeMethods.WM_SHOWME)
+                ShowMe();
+            base.WndProc(ref m);
+        }
+        private void ShowMe() {
+            if (this.WindowState == FormWindowState.Minimized)
+                this.WindowState = FormWindowState.Normal;
+            bool top = TopMost;
+            TopMost = true;
+            TopMost = top;
+        }
+
         private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -106,11 +141,7 @@ namespace ProgramReverse
             ReverseCoordinate.Clear();
             MyMethods.Clear();
         }
-        private void richTextBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //timerNum = 0;
-            //timer1.Start();
-        }
+        
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -137,11 +168,12 @@ namespace ProgramReverse
         }
         private void SetTextColor()
         {
+            //@"\(.*\)"
             richTextBox1.Visible = false;
-            foreach (Match item in Regex.Matches(richTextBox1.Text, @"\(.*\)", RegexOptions.IgnoreCase))
+            foreach (Match item in Regex.Matches(richTextBox1.Text, @"#\d+=", RegexOptions.IgnoreCase))
             {
                 richTextBox1.Select(item.Index, item.Length);
-                richTextBox1.SelectionColor = Color.FromArgb(205, 187, 141);
+                richTextBox1.SelectionColor = Color.FromArgb(193, 239, 192);
             }
             foreach (Match item in Regex.Matches(richTextBox1.Text, @"G1\s+X.*\n|G0\s+X.*", RegexOptions.IgnoreCase))
             {
@@ -366,23 +398,46 @@ namespace ProgramReverse
             }
             SetTextColor();
         }
-
+        private void ConfirmChanges()
+        {
+            try
+            {
+                int selectedItem = listBox1.SelectedIndex;
+                Do(richTextBox1.Lines);
+                listBox1.SelectedIndex = selectedItem;
+                errorLabel.Visible = false;
+                
+            }
+            catch (Exception)
+            {
+                errorLabel.Visible = true;
+            }
+        }
         private void richTextBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.S)
+            if (e.Control && e.KeyCode == Keys.Q && IsChanged)
             {
-                try
-                {
-                    int selectedItem = listBox1.SelectedIndex;
-                    Do(richTextBox1.Lines);
-                    listBox1.SelectedIndex = selectedItem;
-                    errorLabel.Visible = false;
-                }
-                catch (Exception)
-                {
-                    errorLabel.Visible = true;
-                }
+                ConfirmChanges();
+                IsChanged = false;
             }
+            if ((!e.Control || (e.Control && e.KeyCode == Keys.V) || (e.Control && e.KeyCode == Keys.Z)) && !e.Alt && !e.Shift || (e.Shift && e.KeyValue > 20))
+                IsChanged = true;
+            
+        }
+
+        private void ConfirmButton_Click(object sender, EventArgs e)
+        {
+            ConfirmChanges();
+            IsChanged = false;
+
+        }
+        private void richTextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }

@@ -44,14 +44,15 @@
             this.tBoxFileName = new System.Windows.Forms.TextBox();
             this.errorLabel = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.сохранитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.сохранитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.историяФайловToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.regenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.списокПеременныхToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.заменитьНомераToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
+            this.fileButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.openButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileHistoryButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.RegenButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.infoButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.replaceNumButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.confirmButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.varListButton = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -89,10 +90,11 @@
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(5);
             this.richTextBox1.MinimumSize = new System.Drawing.Size(100, 100);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(621, 583);
+            this.richTextBox1.Size = new System.Drawing.Size(621, 578);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             this.richTextBox1.WordWrap = false;
+            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
             this.richTextBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.richTextBox1_KeyPress);
             // 
@@ -204,7 +206,6 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.panel3.Controls.Add(this.button1);
             this.panel3.Controls.Add(this.tBoxFileName);
             this.panel3.Controls.Add(this.errorLabel);
             this.panel3.Controls.Add(this.richTextBox1);
@@ -220,11 +221,13 @@
             this.tBoxFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tBoxFileName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(7)))), ((int)(((byte)(77)))), ((int)(((byte)(153)))));
-            this.tBoxFileName.ForeColor = System.Drawing.Color.White;
-            this.tBoxFileName.Location = new System.Drawing.Point(0, 582);
+            this.tBoxFileName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tBoxFileName.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tBoxFileName.ForeColor = System.Drawing.Color.LightGray;
+            this.tBoxFileName.Location = new System.Drawing.Point(0, 579);
             this.tBoxFileName.Name = "tBoxFileName";
             this.tBoxFileName.ReadOnly = true;
-            this.tBoxFileName.Size = new System.Drawing.Size(621, 20);
+            this.tBoxFileName.Size = new System.Drawing.Size(621, 23);
             this.tBoxFileName.TabIndex = 25;
             this.tBoxFileName.TabStop = false;
             // 
@@ -245,84 +248,88 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.файлToolStripMenuItem,
-            this.regenToolStripMenuItem,
-            this.списокПеременныхToolStripMenuItem,
-            this.заменитьНомераToolStripMenuItem});
+            this.fileButton,
+            this.RegenButton,
+            this.infoButton,
+            this.replaceNumButton,
+            this.confirmButton});
+            this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(905, 24);
             this.menuStrip1.TabIndex = 26;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // файлToolStripMenuItem
+            // fileButton
             // 
-            this.файлToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.сохранитьToolStripMenuItem,
-            this.сохранитьToolStripMenuItem1,
-            this.историяФайловToolStripMenuItem});
-            this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.ShortcutKeyDisplayString = "";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-            this.файлToolStripMenuItem.Text = "Файл";
+            this.fileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.fileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openButton,
+            this.saveButton,
+            this.fileHistoryButton});
+            this.fileButton.Name = "fileButton";
+            this.fileButton.ShortcutKeyDisplayString = "";
+            this.fileButton.Size = new System.Drawing.Size(48, 20);
+            this.fileButton.Text = "Файл";
             // 
-            // сохранитьToolStripMenuItem
+            // openButton
             // 
-            this.сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
-            this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.сохранитьToolStripMenuItem.Text = "Открыть";
-            this.сохранитьToolStripMenuItem.Click += new System.EventHandler(this.panel1_Click);
+            this.openButton.Name = "openButton";
+            this.openButton.Size = new System.Drawing.Size(180, 22);
+            this.openButton.Text = "Открыть";
+            this.openButton.Click += new System.EventHandler(this.panel1_Click);
             // 
-            // сохранитьToolStripMenuItem1
+            // saveButton
             // 
-            this.сохранитьToolStripMenuItem1.Name = "сохранитьToolStripMenuItem1";
-            this.сохранитьToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.сохранитьToolStripMenuItem1.Text = "Сохранить";
-            this.сохранитьToolStripMenuItem1.Click += new System.EventHandler(this.SaveButton_Click);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(180, 22);
+            this.saveButton.Text = "Сохранить";
+            this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
-            // историяФайловToolStripMenuItem
+            // fileHistoryButton
             // 
-            this.историяФайловToolStripMenuItem.Name = "историяФайловToolStripMenuItem";
-            this.историяФайловToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.историяФайловToolStripMenuItem.Text = "История файлов";
+            this.fileHistoryButton.Name = "fileHistoryButton";
+            this.fileHistoryButton.Size = new System.Drawing.Size(180, 22);
+            this.fileHistoryButton.Text = "История файлов";
             // 
-            // regenToolStripMenuItem
+            // RegenButton
             // 
-            this.regenToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.regenToolStripMenuItem.Name = "regenToolStripMenuItem";
-            this.regenToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.regenToolStripMenuItem.Text = "Regen";
-            this.regenToolStripMenuItem.ToolTipText = "Сгенерировать рисунок";
-            this.regenToolStripMenuItem.Click += new System.EventHandler(this.RegenButton_Click);
+            this.RegenButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.RegenButton.Name = "RegenButton";
+            this.RegenButton.Size = new System.Drawing.Size(52, 20);
+            this.RegenButton.Text = "Regen";
+            this.RegenButton.ToolTipText = "Сгенерировать рисунок";
+            this.RegenButton.Click += new System.EventHandler(this.RegenButton_Click);
             // 
-            // списокПеременныхToolStripMenuItem
+            // infoButton
             // 
-            this.списокПеременныхToolStripMenuItem.Name = "списокПеременныхToolStripMenuItem";
-            this.списокПеременныхToolStripMenuItem.Size = new System.Drawing.Size(133, 20);
-            this.списокПеременныхToolStripMenuItem.Text = "Список переменных";
-            this.списокПеременныхToolStripMenuItem.Click += new System.EventHandler(this.button2_Click_1);
+            this.infoButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.varListButton});
+            this.infoButton.Name = "infoButton";
+            this.infoButton.Size = new System.Drawing.Size(51, 20);
+            this.infoButton.Text = "Инфо";
             // 
-            // заменитьНомераToolStripMenuItem
+            // replaceNumButton
             // 
-            this.заменитьНомераToolStripMenuItem.Name = "заменитьНомераToolStripMenuItem";
-            this.заменитьНомераToolStripMenuItem.Size = new System.Drawing.Size(117, 20);
-            this.заменитьНомераToolStripMenuItem.Text = "Заменить номера";
-            this.заменитьНомераToolStripMenuItem.Click += new System.EventHandler(this.button4_Click);
+            this.replaceNumButton.Name = "replaceNumButton";
+            this.replaceNumButton.Size = new System.Drawing.Size(117, 20);
+            this.replaceNumButton.Text = "Заменить номера";
+            this.replaceNumButton.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button1
+            // confirmButton
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(150)))), ((int)(((byte)(150)))));
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.DarkOrange;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(483, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(118, 36);
-            this.button1.TabIndex = 26;
-            this.button1.Text = "Подтвердить изменения Ctrl-Q";
-            this.button1.UseVisualStyleBackColor = false;
+            this.confirmButton.Enabled = false;
+            this.confirmButton.Name = "confirmButton";
+            this.confirmButton.Size = new System.Drawing.Size(125, 20);
+            this.confirmButton.Text = "Подтвердить Ctrl-Q";
+            this.confirmButton.Click += new System.EventHandler(this.ConfirmButton_Click);
+            // 
+            // varListButton
+            // 
+            this.varListButton.Name = "varListButton";
+            this.varListButton.Size = new System.Drawing.Size(188, 22);
+            this.varListButton.Text = "Список переменных";
+            this.varListButton.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // Form1
             // 
@@ -374,14 +381,15 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox tBoxFileName;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem сохранитьToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem сохранитьToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem историяФайловToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem regenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem списокПеременныхToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem заменитьНомераToolStripMenuItem;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem fileButton;
+        private System.Windows.Forms.ToolStripMenuItem openButton;
+        private System.Windows.Forms.ToolStripMenuItem saveButton;
+        private System.Windows.Forms.ToolStripMenuItem fileHistoryButton;
+        private System.Windows.Forms.ToolStripMenuItem RegenButton;
+        private System.Windows.Forms.ToolStripMenuItem infoButton;
+        private System.Windows.Forms.ToolStripMenuItem replaceNumButton;
+        private System.Windows.Forms.ToolStripMenuItem confirmButton;
+        private System.Windows.Forms.ToolStripMenuItem varListButton;
     }
 }
 
