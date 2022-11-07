@@ -4,7 +4,7 @@ using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Text;
 
-namespace ProgramReverse
+namespace CodeEditor
 {
     public static class MyMethods
     {

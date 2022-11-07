@@ -4,18 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ProgramReverse
+namespace CodeEditor
 {
-    public class Code
-    {
-        public List<string> TrimmedCode = new List<string>();
+    public class Code {
+        public List<string> TrimmedCode { get; set; } = new List<string>();
         public List<string> FullCode { get; set; } = new List<string>();
-        public List<string> RewrittenNum;
-        public string[] TrimCode { get; set; }
+        List<string> rewrittenNum;
         public void Clear()
         {
             FullCode.Clear();
             TrimmedCode.Clear();
+        }
+        public List<string> GetTrimmedLine() {
+            return TrimmedCode;
         }
         public void SetCode(string[] code)
         {
@@ -24,8 +25,6 @@ namespace ProgramReverse
                 FullCode.Add(line);
                 TrimmedCode.Add(Trim(line));
             }
-            TrimCode = TrimmedCode.ToArray();
-            
         }
         private string Trim(string line)
         {
@@ -73,13 +72,13 @@ namespace ProgramReverse
 
         public void ResetNumbers()
         {
-            RewrittenNum = new List<string>();
+            rewrittenNum = new List<string>();
             for (int i = 0; i < FullCode.Count; i++)
             {
                 FullCode[i] = RemoveNumber(FullCode[i]);
-                RewrittenNum.Add('N' + i.ToString() + " " + FullCode[i]);
+                rewrittenNum.Add('N' + i.ToString() + " " + FullCode[i]);
             }
-            FullCode = RewrittenNum;
+            FullCode = rewrittenNum;
         }
     }
 

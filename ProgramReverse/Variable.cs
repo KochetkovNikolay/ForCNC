@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ProgramReverse
+namespace CodeEditor
 {
     public class Variable
     {
@@ -114,14 +114,14 @@ namespace ProgramReverse
             return newStr;
         }
 
-        public void LatticesReplace()
-        {
-            for (int i = 0; i < code.TrimCode.Count(); i++)
-                for (int j = 0; j < Lattices.Count; j++)
-                {
-                    code.TrimCode[i] = code.TrimCode[i].Replace(Lattices[j].getLattice(), Lattices[j].Value.ToString());
-                }
-        }
+        //public void LatticesReplace()
+        //{
+        //    for (int i = 0; i < code.TrimCode.Count(); i++)
+        //        for (int j = 0; j < Lattices.Count; j++)
+        //        {
+        //            code.TrimCode[i] = code.TrimCode[i].Replace(Lattices[j].getLattice(), Lattices[j].Value.ToString());
+        //        }
+        //}
 
         public void LatticeSorting()
         {

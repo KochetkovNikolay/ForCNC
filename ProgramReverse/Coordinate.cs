@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ProgramReverse
+namespace CodeEditor
 {
     public enum GType
     {
@@ -136,15 +136,6 @@ namespace ProgramReverse
         }
 
 
-        public string GetString()
-        {
-            string rad = "";
-            if (Radius != null)
-                rad = " R[" + Radius + "]";
-            if (I != null)
-                rad = " I[" + I + "] J[" + J + "]";
-            return " " + Type.ToString() + " X[" + X + "] Y[" + Y + "]" + rad; 
-        }
 
         public object Clone()
         {

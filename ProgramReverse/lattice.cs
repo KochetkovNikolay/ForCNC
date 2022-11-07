@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ProgramReverse {
+namespace CodeEditor {
     public struct lattice {
         public int Number { get; set; }
         public double Value { get; set; }

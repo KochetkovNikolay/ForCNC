@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ProgramReverse
+namespace CodeEditor
 {
     enum direction
     {
@@ -144,11 +144,13 @@ namespace ProgramReverse
             }
 
 
-
-            //DrawPoint(point1, ThinSilver); // Нарисовать точку 1
-            //DrawPoint(point2, ThinSilver); // Нарисовать точку 1
-            //DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
-
+            if (Properties.Settings.Default.IsDotsNeed) {
+                DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+                DrawPoint(point2, ThinSilver); // Нарисовать точку 1
+            }
+            if (Properties.Settings.Default.IsDotsCentreNeed) {
+                DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
+            }
 
             DrawArc(center, radius, angle1, angle2);
         }
@@ -207,9 +209,13 @@ namespace ProgramReverse
             float angle2 = MyMath.AngleOfIsoscelesTriangle(radius, MyMath.Distance(point1, point2));
 
 
-            //DrawPoint(point1, ThinSilver); // Нарисовать точку 1
-            //DrawPoint(point2, ThinSilver); // Нарисовать точку 2
-            //DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
+            if (Properties.Settings.Default.IsDotsNeed) {
+                DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+                DrawPoint(point2, ThinSilver); // Нарисовать точку 1
+            }
+            if (Properties.Settings.Default.IsDotsCentreNeed) {
+                DrawPoint(center, ForArcCenter); // Нарисовать центр дуги
+            }
 
             DrawArc(center, radius, angle1, angle2);
         }
@@ -217,14 +223,18 @@ namespace ProgramReverse
         public void DrawLine(MyPoint point1, MyPoint point2)
         {
             g.DrawLine(ForLine, point1.X, point1.Y, point2.X, point2.Y);
-            //DrawPoint(point1, ThinSilver);
-            //DrawPoint(point2, ThinSilver);
+            if (Properties.Settings.Default.IsDotsNeed) {
+                DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+                DrawPoint(point2, ThinSilver); // Нарисовать точку 1
+            }
         }
         public void DrawLineG0(MyPoint point1, MyPoint point2)
         {
             g.DrawLine(ForLineG0, point1.X, point1.Y, point2.X, point2.Y);
-            //DrawPoint(point1, ThinSilver);
-            //DrawPoint(point2, ThinSilver);
+            if (Properties.Settings.Default.IsDotsNeed) {
+                DrawPoint(point1, ThinSilver); // Нарисовать точку 1
+                DrawPoint(point2, ThinSilver); // Нарисовать точку 1
+            }
         }
         public void DrawAxes(MyPoint point1, MyPoint point2)
         {
@@ -280,6 +290,7 @@ namespace ProgramReverse
                     label.Text = "X: " + Math.Round(item.X, 2).ToString() + " Y: " + Math.Round(item.Y, 2).ToString();
                 }
             }
+            
 
             Clear();
 
@@ -321,16 +332,16 @@ namespace ProgramReverse
                     {
                         DrawLineG0(list[i - 1].Point, list[i].Point);
                     }
-                if (list[i].Type == GType.G1)
+                else if (list[i].Type == GType.G1)
                     DrawLine(list[i - 1].Point, list[i].Point);
-                if (list[i].Type == GType.G2)
+                else if (list[i].Type == GType.G2)
                 {
                     if (list[i].Radius != 0)
                         DrawArcByRadius(list[i - 1].Point, list[i].Point, list[i].ScaleR, direction.clockwise);
                     else
                         DrawArcByCenter(list[i - 1].Point, list[i].Point, list[i].Center, direction.clockwise);
                 }
-                if (list[i].Type == GType.G3)
+                else if (list[i].Type == GType.G3)
                 {
                     if (list[i].Radius != 0)
                         DrawArcByRadius(list[i - 1].Point, list[i].Point, list[i].ScaleR, direction.counter);

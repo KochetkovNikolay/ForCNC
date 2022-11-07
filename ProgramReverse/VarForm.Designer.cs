@@ -1,4 +1,4 @@
-﻿namespace ProgramReverse
+﻿namespace CodeEditor
 {
     partial class VarForm
     {
